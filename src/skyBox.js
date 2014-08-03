@@ -63,7 +63,7 @@ function initTexture(filename, texInd) {
 	image.onload = function() {
 		var t = gl.createTexture();
 		
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // true = inverte imagem
 		gl.bindTexture(gl.TEXTURE_2D, t);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -587,12 +587,12 @@ function webGLStart() {
 			cameraLook.elements[1] 	= 0.0;//g_drawingInfo.BBox.Center.y;
 			cameraLook.elements[2] 	= 1.0;//g_drawingInfo.BBox.Center.z;
 			cameraUp.elements[0] 	= 0.0;
-			cameraUp.elements[1] 	= -1.0;
+			cameraUp.elements[1] 	= 1.0;
 			cameraUp.elements[2] 	= 0.0;
 			
 			lightPos.elements[0]	= 0.0;
-			lightPos.elements[1]	= 0.0 * g_drawingInfo.BBox.Max.y;
-			lightPos.elements[2]	= 0.0 * g_drawingInfo.BBox.Max.z;
+			lightPos.elements[1]	= 5.0 * g_drawingInfo.BBox.Max.y;
+			lightPos.elements[2]	= 5.0 * g_drawingInfo.BBox.Max.z;
 			
 			delta 					= (g_drawingInfo.BBox.Max.x - g_drawingInfo.BBox.Min.x) * 0.05;
 			}
