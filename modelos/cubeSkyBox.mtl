@@ -5,14 +5,14 @@ Ka 0.1 0.1 0.1
 Ks 1.0 1.0 1.0
 Ns 250.0
 Kd 0.0 1.0 0.0
-map_Kd ../Textures/nvlobby_new_posy.png
+map_Kd ../Textures/nvlobby_new_negy.png
 
 newmtl Bottom
 Ka 0.1 0.1 0.1
 Kd 1.0 1.0 0.0
 Ks 1.0 1.0 1.0
 Ns 250.0
-map_Kd ../Textures/nvlobby_new_negy.png
+map_Kd ../Textures/nvlobby_new_posy.png
 
 newmtl Front
 Ka 0.1 0.1 0.1
@@ -33,12 +33,12 @@ Ka 0.1 0.1 0.1
 Kd 1.0 0.0 0.0
 Ks 1.0 1.0 1.0
 Ns 250.0
-map_Kd ../Textures/nvlobby_new_negx.png
+map_Kd ../Textures/nvlobby_new_posx.png
 
 newmtl Right
 Ka 0.1 0.1 0.1
 Kd 1.0 0.0 1.0
 Ks 1.0 1.0 1.0
 Ns 250.0
-map_Kd ../Textures/nvlobby_new_posx.png
+map_Kd ../Textures/nvlobby_new_negx.png
 

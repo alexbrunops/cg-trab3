@@ -565,9 +565,8 @@ function webGLStart() {
 		return;
 		}
 	
-	readOBJFile("modelos/cubeSkyBox.obj", gl, 1, true);
-	//readOBJFile("modelos/sphere.obj", gl, 1, true);
-	
+	readOBJFile("../modelos/cubeSkyBox.obj", gl, 1, true);
+    
 	var tick = function() {   // Start drawing
 		if (g_objDoc != null && g_objDoc.isMTLComplete()) { // OBJ and all MTLs are available
 			
