@@ -52,6 +52,8 @@ function initTextures() {
 				}
 			}
 		}
+	
+	initTexture("../Textures/white.jpg", 6); // adiciona textura para tijolo de vidro no indice 6
 }
 
 // ********************************************************
@@ -178,44 +180,44 @@ function initAxisVertexBuffer(gl, max) {
 
 	// X Axis
 	// V0
-	vPos.push(0.0);
-	vPos.push(0.0);
-	vPos.push(0.0);
+	vPos.push(-0.2);
+	vPos.push(-0.2);
+	vPos.push( 0.0);
 	vColor.push(1.0);
 	vColor.push(1.0);
 	vColor.push(1.0);
 	// V1
-	vPos.push(max.x);
-	vPos.push(0.0);
-	vPos.push(0.0);
+	vPos.push( 0.2);
+	vPos.push(-0.2);
+	vPos.push( 0.0);
 	vColor.push(1.0);
-	vColor.push(0.0);
-	vColor.push(0.0);
+	vColor.push(1.0);
+	vColor.push(1.0);
 
 	// Y Axis
 	// V2
+	vPos.push(0.2);
+	vPos.push(0.2);
 	vPos.push(0.0);
-	vPos.push(max.y);
-	vPos.push(0.0);
-	vColor.push(0.0);
 	vColor.push(1.0);
-	vColor.push(0.0);
+	vColor.push(1.0);
+	vColor.push(1.0);
 
 	// Z Axis
 	// V3
-	vPos.push(0.0);
-	vPos.push(0.0);
-	vPos.push(max.z);
-	vColor.push(0.0);
-	vColor.push(0.0);
+	vPos.push(-0.2);
+	vPos.push( 0.2);
+	vPos.push( 0.0);
+	vColor.push(1.0);
+	vColor.push(1.0);
 	vColor.push(1.0);
 	
-	lInd.push(0);	
+	lInd.push(2);	
 	lInd.push(1);	
 	lInd.push(0);	
+	lInd.push(3);	
 	lInd.push(2);	
 	lInd.push(0);	
-	lInd.push(3);	
 	
 	axis.vertexBuffer = gl.createBuffer();
 	if (axis.vertexBuffer) {		
@@ -242,7 +244,8 @@ function initAxisVertexBuffer(gl, max) {
 		alert("ERROR: can not create indexBuffer");
 	
 	axis.numObjects = lInd.length;
-	axis.Material	= null;
+	axis.Material	= -1;
+	//axis.Material	= null;
 	
 	return axis;
 }
@@ -276,16 +279,21 @@ function drawAxis(gl, o, shaderProgram, primitive) {
 // ********************************************************
 function draw(gl, o, shaderProgram, primitive) {
 
-var matAmb		= new Vector4();
-var matDif		= new Vector4();
-var matSpec		= new Vector4();
-var Ns;
+	var matAmb		= new Vector4();
+	var matDif		= new Vector4();
+	var matSpec		= new Vector4();
+	var Ns;
 
-	if (texture[o.Material] != null) {   	
+	if (texture[o.Material] != null) {
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture[[o.Material]]);
 		}
-		
+	
+	if (texture[6] != null) {
+		gl.activeTexture(gl.TEXTURE1);
+		gl.bindTexture(gl.TEXTURE_2D, texture[6]);
+		}
+	
 	if (o.Material != -1) {
 		matAmb.elements[0] = material[o.Material].Ka.r;
 		matAmb.elements[1] = material[o.Material].Ka.g;
@@ -323,6 +331,8 @@ var Ns;
 		Ns 					= 100.0;
 		}
 
+	gl.uniform1i(textShader.tijoloVidro, 1);
+			
 	gl.uniform4fv(shaderProgram.uMatAmb, matAmb.elements);
 	gl.uniform4fv(shaderProgram.uMatDif, matDif.elements);
 	gl.uniform4fv(shaderProgram.uMatSpec, matSpec.elements);
@@ -334,24 +344,24 @@ var Ns;
 		gl.vertexAttribPointer(shaderProgram.vPositionAttr, 3, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(shaderProgram.vPositionAttr);  
 		}
-	else
-		alert("o.vertexBuffer == null");
+	//else
+	//	alert("o.vertexBuffer == null");
 
 	if (o.normalBuffer != null) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, o.normalBuffer);
 		gl.vertexAttribPointer(shaderProgram.vNormalAttr, 3, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(shaderProgram.vNormalAttr);
 		}
-	else
-		alert("o.normalBuffer == null");
+	//else
+	//	alert("o.normalBuffer == null");
 	
 	if (o.texCoordBuffer != null) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, o.texCoordBuffer);
 		gl.vertexAttribPointer(shaderProgram.vTexCoordAttr, 2, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(shaderProgram.vTexCoordAttr);
 		}
-	else
-		alert("o.texCoordBuffer == null");
+	//else
+	//	alert("o.texCoordBuffer == null");
 
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, o.indexBuffer);
 
@@ -364,16 +374,16 @@ var Ns;
 // ********************************************************
 function drawScene() {
 
-var modelMat 	= new Matrix4();
-var ViewMat 	= new Matrix4();
-var ProjMat 	= new Matrix4();
-var NormMat 	= new Matrix4();
-var mvpMat		= new Matrix4();
-var lightColor	= new Vector4();
+	var modelMat 	= new Matrix4();
+	var ViewMat 	= new Matrix4();
+	var ProjMat 	= new Matrix4();
+	var NormMat 	= new Matrix4();
+	var mvpMat		= new Matrix4();
+	var lightColor	= new Vector4();
 
 	lightColor.elements[0] = 1.0;
 	lightColor.elements[1] = 1.0;
-	lightColor.elements[2] = 1.0;
+	lightColor.elements[2] = 0.0;
 	lightColor.elements[3] = 1.0;
 
 	modelMat.setIdentity();
@@ -406,14 +416,14 @@ var lightColor	= new Vector4();
     				);
     
     ProjMat.setPerspective( 75.0, gl.viewportWidth / gl.viewportHeight, 0.1, 1200.0);
-    		
+/*    		
 	mvpMat.multiply(ProjMat);
 	mvpMat.multiply(ViewMat);
 	mvpMat.multiply(modelMat);	
 	gl.uniformMatrix4fv(simpleShader.MVPMatUniform, false, mvpMat.elements);
 
 	drawAxis(gl, axis, simpleShader, gl.LINES);	
-
+*/
     try {
     	gl.useProgram(textShader);
 		}
@@ -422,7 +432,11 @@ var lightColor	= new Vector4();
         console.error(err.description);
     	}
 
-		
+	lightColor.elements[0] = 1.0;
+	lightColor.elements[1] = 1.0;
+	lightColor.elements[2] = 1.0;
+	lightColor.elements[3] = 1.0;
+	
 	modelMat.multiply(modelRotMat);
 	NormMat.setInverseOf(modelMat);
 	NormMat.transpose();
@@ -431,10 +445,21 @@ var lightColor	= new Vector4();
 	gl.uniformMatrix4fv(textShader.uViewMat, false, ViewMat.elements);
 	gl.uniformMatrix4fv(textShader.uProjMat, false, ProjMat.elements);
 	gl.uniformMatrix4fv(textShader.uNormMat, false, NormMat.elements);
+	
 	gl.uniform3fv(textShader.uCamPos, cameraPos.elements);
 	gl.uniform4fv(textShader.uLightColor, lightColor.elements);
 	gl.uniform3fv(textShader.uLightPos, lightPos.elements);
 	gl.uniform3fv(textShader.uCamPos, cameraPos.elements);
+	
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.enable(gl.BLEND);
+    gl.disable(gl.DEPTH_TEST);
+	
+	gl.uniform1f(textShader.camadaAlpha, 0.1);
+	gl.uniform1i(textShader.isTijoloVidro, 1);
+	draw(gl, axis, textShader, gl.TRIANGLES);
+	
+	gl.uniform1i(textShader.isTijoloVidro, 0);
 	
 	for(var o = 0; o < model.length; o++) 
 		draw(gl, model[o], textShader, gl.TRIANGLES);
@@ -460,15 +485,10 @@ function handleKeyDown(event) {
 		Upper = true;
 	
 	switch (keyunicode) {
-		case 39	:	// Right cursor key
-					break;						
-		case 37	:	// Left cursor key
-					break;			
-					
-		/*case 27	:	// Esc
-					cameraPos.elements[0] 	= 2.0 * g_drawingInfo.BBox.Max.x;
-					cameraPos.elements[1] 	= 2.0 * g_drawingInfo.BBox.Max.y;
-					cameraPos.elements[2] 	= 2.0 * g_drawingInfo.BBox.Max.z;
+		case 27	:	// Esc
+					cameraPos.elements[0] 	= 0.0 * g_drawingInfo.BBox.Max.x;
+					cameraPos.elements[1] 	= 0.0 * g_drawingInfo.BBox.Max.y;
+					cameraPos.elements[2] 	= 0.5 * g_drawingInfo.BBox.Max.z;
 					cameraLook.elements[0] 	= g_drawingInfo.BBox.Center.x;
 					cameraLook.elements[1] 	= g_drawingInfo.BBox.Center.y;
 					cameraLook.elements[2] 	= g_drawingInfo.BBox.Center.z;
@@ -478,17 +498,33 @@ function handleKeyDown(event) {
 					modelRotMat.setIdentity();
 					break;
 						
-		case 38	:	// Up cursor key
+		case 33	:	// Page Up
 					cameraPos.elements[0] += delta; 
 					cameraPos.elements[1] += delta;
 					cameraPos.elements[2] += delta;
 					break;
-						
-		case 40	:	// Down cursor key
+					
+		case 34	:	// Page Down
 					cameraPos.elements[0] -= delta; 
 					cameraPos.elements[1] -= delta;
 					cameraPos.elements[2] -= delta;
-					break;*/					
+					break;
+					
+		case 37	:	// Left cursor key
+					modelRotMat.rotate(-0.9, 0.0, 1.0, 0.0);
+					break;	
+					
+		case 38	:	// Up cursor key
+					modelRotMat.rotate(0.5, 1.0, 0.0, 0.0);
+					break;
+					
+		case 39	:	// Right cursor key
+					modelRotMat.rotate(0.5, 0.0, 1.0, 0.0);
+					break;	
+						
+		case 40	:	// Down cursor key
+					modelRotMat.rotate(-0.5, 1.0, 0.0, 0.0);
+					break;			
 		}
 	drawScene();					
 }
@@ -515,8 +551,8 @@ function webGLStart() {
 	simpleShader.vColorAttr 	= gl.getAttribLocation(simpleShader, "aVColor");
 	simpleShader.MVPMatUniform 	= gl.getUniformLocation(simpleShader, "uMVPMat");
 	
-	if (simpleShader.vPositionAttr < 0 	|| 
-		simpleShader.vColorAttr < 0 		|| 
+	if (simpleShader.vPositionAttr < 0 	||
+		simpleShader.vColorAttr < 0 		||
 		!simpleShader.MVPMatUniform  ) {
 		console.log("Error getAttribLocation simpleShader"); 
 		return;
@@ -536,7 +572,11 @@ function webGLStart() {
 	textShader.uProjMat 		= gl.getUniformLocation(textShader, "uProjMat");
 	textShader.uNormMat 		= gl.getUniformLocation(textShader, "uNormMat");
 	
-	textShader.uSampler	 		= gl.getUniformLocation(textShader, "uSampler");	
+	textShader.uSampler	 		= gl.getUniformLocation(textShader, "uSampler");
+	
+	textShader.tijoloVidro			= gl.getUniformLocation(textShader, "tijoloVidro");
+	textShader.isTijoloVidro		= gl.getUniformLocation(textShader, "isTijoloVidro");
+	textShader.camadaAlpha		= gl.getUniformLocation(textShader, "camadaAlpha");
 	
 	if (textShader.vPositionAttr < 0 	|| 
 		textShader.vColorAttr < 0 		|| 
@@ -582,17 +622,19 @@ function webGLStart() {
 
 			cameraPos.elements[0] 	= 0.0 * g_drawingInfo.BBox.Max.x;
 			cameraPos.elements[1] 	= 0.0 * g_drawingInfo.BBox.Max.y;
-			cameraPos.elements[2] 	= 0.0 * g_drawingInfo.BBox.Max.z;
-			cameraLook.elements[0] 	= 0.0;//g_drawingInfo.BBox.Center.x;
-			cameraLook.elements[1] 	= 0.0;//g_drawingInfo.BBox.Center.y;
-			cameraLook.elements[2] 	= 1.0;//g_drawingInfo.BBox.Center.z;
+			cameraPos.elements[2] 	= 0.5 * g_drawingInfo.BBox.Max.z;
+			
+			cameraLook.elements[0] 	= g_drawingInfo.BBox.Center.x;
+			cameraLook.elements[1] 	= g_drawingInfo.BBox.Center.y;
+			cameraLook.elements[2] 	= g_drawingInfo.BBox.Center.z;
+			
 			cameraUp.elements[0] 	= 0.0;
 			cameraUp.elements[1] 	= 1.0;
 			cameraUp.elements[2] 	= 0.0;
 			
 			lightPos.elements[0]	= 0.0;
-			lightPos.elements[1]	= 5.0 * g_drawingInfo.BBox.Max.y;
-			lightPos.elements[2]	= 5.0 * g_drawingInfo.BBox.Max.z;
+			lightPos.elements[1]	= 0.3;
+			lightPos.elements[2]	= cameraPos.elements[2];
 			
 			delta 					= (g_drawingInfo.BBox.Max.x - g_drawingInfo.BBox.Min.x) * 0.05;
 			}

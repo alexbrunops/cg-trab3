@@ -75,22 +75,34 @@
 	uniform vec4 uMatSpec;
 	uniform float uExpSpec;
 	
-	void main(void) {
-		vec4 texel = texture2D(uSampler, vTextCoord);
-		
-		vec4 ambient = vec4(uLColor.rgb * uMatAmb.rgb, uMatAmb.a);
+	uniform sampler2D tijoloVidro;
+	uniform int isTijoloVidro;
+	uniform float camadaAlpha;
 	
-		vec3 vL = normalize(uLPos - vPosW);
-		float teta = max(dot(vL, vNormal), 0.0);
-				
-		vec4 diffuse = vec4(uLColor.rgb * uMatDif.rgb * teta, texel.a);	
+	void main(void) {
+		if (isTijoloVidro == 1) {
+			vec4 texel  	= texture2D(tijoloVidro, vTextCoord);
+			vec4 texelAux 	= texel;
+			
+			vec3 nTX		= normalize(texelAux.xyz);
+			
+			vec3 vL 		= normalize(uLPos - vPosW);
+			vec3 vV 		= normalize(uCamPos - vPosW);			
+			vec3 vR 		= normalize(reflect(-vL, nTX));
 
-		vec3 vV = normalize(uCamPos - vPosW);
-		vec3 vR = normalize(reflect(-vL, vNormal));
-		float omega = max(dot(vV, vR), 0.0);
-		vec4 specular = vec4(uLColor.rgb * uMatSpec.rgb * pow(omega,uExpSpec), uMatSpec.a);	
-		
-		gl_FragColor = texel;//clamp(texel + ambient + diffuse + specular, 0.0, 1.0);
+			float teta 		= max(dot(vL, nTX), 0.0);
+			float omega 	= max(dot(vV, vR), 0.0);
+			
+			vec4 ambient 	= vec4(uLColor.rgb * uMatAmb.rgb, uLColor.a * uMatAmb.a);
+			vec4 diffuse 	= vec4(uLColor.rgb * texel.rgb * teta, uLColor.a * texel.a);		
+			vec4 specular 	= vec4(uLColor.rgb * uMatSpec.rgb * pow(omega, 0.4 * uExpSpec), uLColor.a * uMatSpec.a);	
+
+			gl_FragColor 	= clamp(ambient + specular + camadaAlpha, 0.0, 1.0);
+		}else {
+			vec4 texel 		= texture2D(uSampler, vTextCoord);
+
+			gl_FragColor 	= clamp(texel , 0.0, 1.0);
+		}
 	}
 </script>
 
